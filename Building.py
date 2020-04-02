@@ -6,3 +6,7 @@ class Building:
     def __init__(self,elevators,users):
         self.elevators = elevators
         self.users = users
+    def enter(self,user):
+        #Generer les users
+        pass
+    

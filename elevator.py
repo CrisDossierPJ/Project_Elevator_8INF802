@@ -49,16 +49,32 @@ class Elevator:
         return self.users[0].floorWanted
 
     
-    #Retourne l'étage le plsu intéressant selon les Users, et l'étage actuel
+    #Retourne l'étage le plus intéressant selon les Users, et l'étage actuel
     def ShortestSeekTimeFirst(self):
+        min = 0
+        SeekFloor = -1
+        for user in self.users:
+            res = self.floor - user.floorWanted
+            if res < 0:
+                res * -1
+            if res < min:
+                min = res
+                SeekFloor = user.floorWanted
+            if min < 0:
+                min * -1
+        return SeekFloor
         pass
 
     #Retourne un étage selon la directino actuelle, et les Users actuels
     def LinearScan(self):
         #Voir pour l'étage le plus proche où des utilisateurs veulent descendre selon le sens actuel ????
         pass
-
-
+    
+    #----- 02/04/2020 cricri ---
+    #Ajout d'un user dans l'ascsenceur
+    def boardUsers(self,user):
+        self.users.append(user)
+        
     #Fonction a appelé après le move() et les 10 secondes, avant le prochain move
     #pour récupérer les Users à l'étage actuel.
     def loadUsers(self, newUsers):
