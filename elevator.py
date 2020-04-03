@@ -1,10 +1,12 @@
 #!/usr/bin/python3
-
+from User import User
+import time
 class Elevator:
-    #up :Boolean /  Nombres de places dans l'ascenseur
     #idle :Boolean /pour savoir si l'ascenseur est au ralenti ou non
-    #floor : INT/ pour savoir ou est l'asenceur
+    #up :Boolean /  Nombres de places dans l'ascenseur
     #users : List<User> /  les clients présent dans l'ascenseur
+    #floor : INT/ pour savoir ou est l'asenceur
+    
     def __init__(self,idle,up,users,floor):
         self.idle = idle
         self.up = up
@@ -30,6 +32,7 @@ class Elevator:
 
             #Pour le moment, juste FirstCome
             nextFloor = self.FirstComeFirstServe()
+            #nextFloor = self.ShortestSeekTimeFirst()
 
         #Sinon prend le proposedFloor
         elif(len(self.users) == 0 and proposedFloor != -1):
@@ -72,42 +75,82 @@ class Elevator:
     
     #----- 02/04/2020 cricri ---
     #Ajout d'un user dans l'ascsenceur
-    def boardUsers(self,user):
+    def call(self,user):
         self.users.append(user)
         
     #Fonction a appelé après le move() et les 10 secondes, avant le prochain move
     #pour récupérer les Users à l'étage actuel.
-    def loadUsers(self, newUsers):
+    def loadUsers(self, newUsers = None):
         #Vider les Users arrivés à leur étage
         #en retournant une liste d'utilisateurs a Building
         leavers = []
         for user in self.users:
             if(user.floorWanted == self.floor):
+                user.currentFloor = user.floorWanted
                 leavers.append(user)
+                   
         self.users = [x for x in self.users if x not in leavers]
 
         #Recupérer les nouveaux Users
-        self.users += newUsers
-
+        if newUsers != None:
+            self.users += newUsers
         #Retourne les Users qui descendent
         return leavers
+    
+    #floorWanted : int / ou veut aller l'utilisateur ? 
+    #begin/end : date/ heure d'arrivée / de sortie
+    #workingTime : int / nb minutes passées dans le batiment
+    #working : Boolean / L'utilisateur travaille ou non 
+#Ils viennent d'arriver au premier etage
+begin = time.time()
+currentFloor = 1
+us = User(2,begin,0,12,False,currentFloor)
+uss = User(5,begin,0,13,False,currentFloor)
+usf = User(4,begin,0,2,False,currentFloor)
+usd = User(6,begin,0,3,False,currentFloor)
 
-    """
-    #Premier arrivé premier servi
-    def FirstComeFirstServe(self):
-        if self.users.size() != 0:
-            for i in range(0,self.users.size()):
-                goTo(self.users(i).floorWanted)
-                #wait(10)
-                for i in range(0,self.users.size()):
-                    if(self.floor == self.users(i).floorWanted):
-                        self.users.remove(i)
-        return 0
-    def goTo(self,floorUser):
-        self.floor = floorUser
-        
-    def shortestSeekTimeFirst(self):
-        return 0
-    def LinearScan(self):
-        return 0
-    """
+
+    #idle : Boolean /pour savoir si l'ascenseur est au ralenti ou non
+    #up :Boolean /  Nombres de places dans l'ascenseur
+    #users : List<User> /  les clients présent dans l'ascenseur
+    #floor : INT/ pour savoir ou est l'asenceur
+luser = []
+luser.append(us)
+luser.append(uss)
+luser.append(usd)
+luser.append(usf)
+
+
+el = Elevator(True,False,[],5)
+i = 0
+workers = []
+el.move(1)
+el.loadUsers(luser)
+while True:
+    print(el.floor)
+    el.move()
+    time.sleep(1)
+    workers += el.loadUsers()
+    
+    for worker in workers:
+        worker.working = True
+    
+    
+    i+=1
+    if i ==10:
+        print("Hey")
+        for worker in workers:
+            end = time.time()
+            worker.goHome()
+            
+            el.move(worker.currentFloor)
+            time.sleep(1)
+            worker.end = end
+            el.loadUsers(workers)
+            
+            print(worker.currentFloor)
+            
+            
+
+            
+
