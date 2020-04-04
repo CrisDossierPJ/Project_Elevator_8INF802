@@ -11,8 +11,10 @@ class User:
         self.end = end
         self.workingTime = workingTime
         self.working = working
+        self.currentFloor = currentFloor
     
     def goHome(self):
         self.floorWanted = 1
         self.working = False
-        pass
+    def callEl(self,elevator):
+        elevator.move(self.currentFloor)

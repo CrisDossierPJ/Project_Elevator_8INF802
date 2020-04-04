@@ -124,7 +124,6 @@ luser.append(uss)
 luser.append(usd)
 luser.append(usf)
 
-
 el = Elevator(True,False,[],6,None)
 
 i = 0
