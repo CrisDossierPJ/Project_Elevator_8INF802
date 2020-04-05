@@ -23,12 +23,12 @@ class Building:
         self.totalWaitingTime = 0
         self.meanWaitingTime = 0
         self.calls = []
+        self.exp = exponnorm(60)
     
     def generateUser(self):
         prob = numpy.random.poisson(0.5)
-        rv = exponnorm(60)
         if prob != 0 :
-            user = User(numpy.random.randint(2,8),time.time(),0,rv)
+            user = User(numpy.random.randint(2,8),time.time(),0,self.exp.rvs())
         else :
             return None
         return user
@@ -37,4 +37,26 @@ class Building:
     def proposeFloor(self):
         return self.calls[0]
 
+
+    def arrivedAt(self, user, floor):
+        user.end = time.time()
+        diff = user.end - user.begin
+        self.totalWaitingTime += diff
+        self.totalTravels += 1
+        if(floor == 1):
+            del user
+        else:
+            user.begin = 0
+            user.working = True
+
+    def getBackHome(self, user):
+        if(user.end + user.workingTime >= time.time()):
+            user.begin = time.time()
+            user.end = 0
+            if(user.wantedFloor not in self.calls):
+                self.calls.append(user.wantedFloor)
+            user.wantedFloor = 1
+            user.working = False
+        else:
+            pass
     
