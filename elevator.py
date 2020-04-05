@@ -63,11 +63,6 @@ class Elevator:
                 min = res
                 SeekFloor = user.floorWanted
         return SeekFloor
-    
-    #----- 02/04/2020 cricri ---
-    #Ajout d'un user dans l'ascsenceur
-    def boardUsers(self,user):
-        self.users.append(user)
         
     #Fonction a appelé après le move() et les 10 secondes, avant le prochain move
     #pour récupérer les Users à l'étage actuel.

@@ -8,7 +8,13 @@ class elevatorThread(threading.Thread):
         self.building=building
         
     def run(self):
-        pass
-        #TODO :  - LoadUser dans chaque Elevator 
-        #       time.sleep(10)
-        #       pour chaque ascenseur --> move(etage conseillé)  
+        for elev in self.building.elevators:
+            newUsers = self.building.getIntoElevator(elev.floor)
+            leavers = elev.loadsUsers(newUsers)
+            for user in leavers:
+                self.building.arrivedAt(user, elev.floor)
+                if(elev.floor != 1):
+                    self.building.users[str(elev.floor)].append(user)
+        time.sleep(10)
+        for elev in self.building.elevators:
+            elev.move(self.building.proposeFloor()) 

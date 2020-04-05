@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 from User import User
+from elevator import Elevator
 from scipy.stats import poisson,exponnorm
 import time
 import numpy
+from elevatorThread import elevatorThread
+from userThread import userThread
 
 class Building:
     #elevators : list<Elevator> /
@@ -24,15 +27,24 @@ class Building:
         self.meanWaitingTime = 0
         self.calls = []
         self.exp = exponnorm(60)
-    
+
+        for i in range(nbElevator):
+            newElevator = Elevator(False,False,[],1,FCFS)
+            self.elevators.append(newElevator)
+
+        userT = userThread(self)
+        userT.start()
+
+        elevatorT = elevatorThread(self)
+        elevatorT.start()
+
     def generateUser(self):
         prob = numpy.random.poisson(0.5)
-        users = []
         if prob != 0 :
-            for i in range(prob):
-                user = User(numpy.random.randint(2,8),time.time(),0,self.exp.rvs())
-                users.append(user)
-        return users
+            user = User(numpy.random.randint(2,8),time.time(),0,self.exp.rvs())
+        else :
+            return None
+        return user
         
     
     def proposeFloor(self):
@@ -58,6 +70,13 @@ class Building:
                 self.calls.append(user.wantedFloor)
             user.wantedFloor = 1
             user.working = False
-        else:
-            pass
-    
+
+    def getIntoElevator(self, floor):
+        inTransit = []
+        for user in self.users[floor]:
+            if(not user.Working):
+                inTransit.append(user)
+                self.users[floor].remove(user)
+        return inTransit
+
+        
