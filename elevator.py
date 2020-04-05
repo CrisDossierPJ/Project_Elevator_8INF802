@@ -54,21 +54,11 @@ class Elevator:
         min = 0
         SeekFloor = -1
         for user in self.users:
-            res = self.floor - user.floorWanted
-            if res < 0:
-                res * -1
+            res = abs(self.floor - user.floorWanted)
             if res < min:
                 min = res
                 SeekFloor = user.floorWanted
-            if min < 0:
-                min * -1
         return SeekFloor
-        pass
-
-    #Retourne un étage selon la directino actuelle, et les Users actuels
-    def LinearScan(self):
-        #Voir pour l'étage le plus proche où des utilisateurs veulent descendre selon le sens actuel ????
-        pass
     
     #----- 02/04/2020 cricri ---
     #Ajout d'un user dans l'ascsenceur
@@ -77,7 +67,7 @@ class Elevator:
         
     #Fonction a appelé après le move() et les 10 secondes, avant le prochain move
     #pour récupérer les Users à l'étage actuel.
-    def loadUsers(self, newUsers):
+    def loadUsers(self, newUsers = []):
         #Vider les Users arrivés à leur étage
         #en retournant une liste d'utilisateurs a Building
         leavers = []
@@ -91,23 +81,3 @@ class Elevator:
 
         #Retourne les Users qui descendent
         return leavers
-
-    """
-    #Premier arrivé premier servi
-    def FirstComeFirstServe(self):
-        if self.users.size() != 0:
-            for i in range(0,self.users.size()):
-                goTo(self.users(i).floorWanted)
-                #wait(10)
-                for i in range(0,self.users.size()):
-                    if(self.floor == self.users(i).floorWanted):
-                        self.users.remove(i)
-        return 0
-    def goTo(self,floorUser):
-        self.floor = floorUser
-        
-    def shortestSeekTimeFirst(self):
-        return 0
-    def LinearScan(self):
-        return 0
-    """
