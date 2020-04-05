@@ -6,13 +6,28 @@ import time
 import numpy
 import threading
 
-class elevatorThread(threading.Thread):
+class userThread(threading.Thread):
     def __init__(self,building):
         threading.Thread.__init__(self)
         self.building=building
-        
+    
     def run(self):
+        userCooldown = 6
         while True : 
+            if(userCooldown == 6):
+                userCooldown = 0
+                newUsers = self.building.generateUser()
+                for user in newUsers:
+                    if(user.floorWanted not in self.building.calls):
+                        self.building.calls.append(1)
+                self.building.users['1'] += newUsers
+                if self.building.totalTravels != 0 :
+                    self.building.meanWaitingTime = self.building.totalWaitingTime / self.building.totalTravels
+                self.building.totalUsers += len(newUsers)
+                for floor in self.building.users.values():
+                    for user in floor:
+                        self.building.getBackHome(user)
+
             for elev in self.building.elevators:
                 newUsers = self.building.getIntoElevator(elev.floor)
                 leavers = elev.loadUsers(newUsers)
@@ -22,34 +37,20 @@ class elevatorThread(threading.Thread):
                         self.building.users[str(elev.floor)].append(user)
                         for elev in self.building.elevators:
                             elev.idle = False
-            time.sleep(10)
-            for elev in self.building.elevators:
-                elev.move(self.building.proposeFloor())
+                for elev in self.building.elevators:
+                    elev.move(self.building.proposeFloor())
 
-class userThread(threading.Thread):
-    def __init__(self,building):
-        threading.Thread.__init__(self)
-        self.building=building
-    
-    def run(self):
-        while True : 
-            newUsers = self.building.generateUser()
-            for user in newUsers:
-                if(user.floorWanted not in self.building.calls):
-                    self.building.calls.append(1)
-            self.building.users['1'] += newUsers
-            if self.building.totalTravels != 0 :
-                self.building.meanWaitingTime = self.building.totalWaitingTime / self.building.totalTravels
-            self.building.totalUsers += len(newUsers)
-            for floor in self.building.users.values():
-                for user in floor:
-                    self.building.getBackHome(user)
             #affichage
-            print("Etage            ",self.building.elevators[0].floor," Nb utilisateurs dans building : ", self.building.totalUsers)
+            a = 0
+            for b in self.building.users.values():
+                a += len(b)
+            a += len(self.building.elevators[0].users)
+            print("Etage            ",self.building.elevators[0].floor," Nb utilisateurs total : ", self.building.totalUsers, "Nb users actuels : ",a)
             print("-------------------------------------------")
             print("List utilisateur ",self.building.elevators[0].users)
             
-            time.sleep(1)
+            userCooldown += 1
+            time.sleep(0.16)
 
 class Building:
     #elevators : list<Elevator> /
@@ -73,14 +74,12 @@ class Building:
         self.exp = exponnorm(60)
 
         for i in range(nbElevator):
-            newElevator = Elevator(False,False,[],2,FCFS)
+            newElevator = Elevator(False,False,[],1,FCFS)
             self.elevators.append(newElevator)
 
         userT = userThread(self)
         userT.start()
 
-        elevatorT = elevatorThread(self)
-        elevatorT.start()
 
     def generateUser(self):
         prob = numpy.random.poisson(0.5)
@@ -128,4 +127,4 @@ class Building:
                 self.users[str(floor)].remove(user)
         return inTransit
 
-duil = Building(1)        
+duil = Building(2)        
