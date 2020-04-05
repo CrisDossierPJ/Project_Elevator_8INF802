@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 from User import User
+from scipy.stats import poisson,exponnorm
+import time
+import numpy
 
 class Building:
     #elevators : list<Elevator> /
@@ -22,9 +25,16 @@ class Building:
         self.calls = []
     
     def generateUser(self):
-        pass
+        prob = numpy.random.poisson(0.5)
+        rv = exponnorm(60)
+        if prob != 0 :
+            user = User(numpy.random.randint(2,8),time.time(),0,rv)
+        else :
+            return None
+        return user
+        
     
     def proposeFloor(self):
         return self.calls[0]
-    
+
     
