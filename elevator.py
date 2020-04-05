@@ -5,11 +5,12 @@ class Elevator:
     #idle :Boolean /pour savoir si l'ascenseur est au ralenti ou non
     #floor : INT/ pour savoir ou est l'asenceur
     #users : List<User> /  les clients présent dans l'ascenseur
-    def __init__(self,idle,up,users,floor):
+    def __init__(self,idle,up,users,floor, FCFS):
         self.idle = idle
         self.up = up
         self.users = users
         self.floor = floor
+        self.FCFS = FCFS
 
     #Fonction de prochain mouvement, appel fait par thread dans Building toutes les 10 secondes
     #proposedFloor : INT / de base à -1, sinon
@@ -27,9 +28,10 @@ class Elevator:
         nextFloor = -1
         if(len(self.users) != 0):
             #Choisir l'étage desiré selon la fonction choisie (First Come First Serve ou SSTF)
-
-            #Pour le moment, juste FirstCome
-            nextFloor = self.FirstComeFirstServe()
+            if(self.FCFS):
+                nextFloor = self.FirstComeFirstServe()
+            else:
+                nextFloor = self.ShortestSeekTimeFirst()
 
         #Sinon prend le proposedFloor
         elif(len(self.users) == 0 and proposedFloor != -1):
