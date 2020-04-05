@@ -27,11 +27,12 @@ class Building:
     
     def generateUser(self):
         prob = numpy.random.poisson(0.5)
+        users = []
         if prob != 0 :
-            user = User(numpy.random.randint(2,8),time.time(),0,self.exp.rvs())
-        else :
-            return None
-        return user
+            for i in range(prob):
+                user = User(numpy.random.randint(2,8),time.time(),0,self.exp.rvs())
+                users.append(user)
+        return users
         
     
     def proposeFloor(self):
