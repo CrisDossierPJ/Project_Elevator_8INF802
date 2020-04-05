@@ -38,12 +38,16 @@ class Elevator:
             nextFloor = proposedFloor
 
         #Selon la valeur de nextFloor, on se deplace
-        if(nextFloor > self.floor):
-            self.up = True
-            self.floor += 1
-        else:
-            self.up = False
-            self.floor -= 1
+        if nextFloor != -1:
+            print("test", nextFloor)
+            if(nextFloor > self.floor ):
+                print("JE SUIS ALLER EN HAUT ")
+                self.up = True
+                self.floor += 1
+            else:
+                print("JE SUIS ALLER EN BAS ")
+                self.up = False
+                self.floor -= 1
         
 
     #Retourne l'etage du 1er User, ne prend pas en compte le sens actuel de déplacement
