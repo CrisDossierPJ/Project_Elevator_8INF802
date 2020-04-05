@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from User import User
 
 class Building:
     #elevators : list<Elevator> /
@@ -18,5 +19,12 @@ class Building:
         self.totalTravels = 0
         self.totalWaitingTime = 0
         self.meanWaitingTime = 0
-
+        self.calls = []
+    
+    def generateUser(self):
+        pass
+    
+    def proposeFloor(self):
+        return self.calls[0]
+    
     

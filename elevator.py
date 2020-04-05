@@ -57,6 +57,8 @@ class Elevator:
         SeekFloor = -1
         for user in self.users:
             res = abs(self.floor - user.floorWanted)
+            if min ==0:
+                min = res
             if res < min:
                 min = res
                 SeekFloor = user.floorWanted
