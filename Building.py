@@ -4,8 +4,40 @@ from elevator import Elevator
 from scipy.stats import poisson,exponnorm
 import time
 import numpy
-from elevatorThread import elevatorThread
-from userThread import userThread
+import threading
+
+class elevatorThread(threading.Thread):
+    def __init__(self,building):
+        threading.Thread.__init__(self)
+        self.building=building
+        
+    def run(self):
+        for elev in self.building.elevators:
+            newUsers = self.building.getIntoElevator(elev.floor)
+            leavers = elev.loadsUsers(newUsers)
+            for user in leavers:
+                self.building.arrivedAt(user, elev.floor)
+                if(elev.floor != 1):
+                    self.building.users[str(elev.floor)].append(user)
+        time.sleep(10)
+        for elev in self.building.elevators:
+            elev.move(self.building.proposeFloor())
+
+class userThread(threading.Thread):
+    def __init__(self,building):
+        threading.Thread.__init__(self)
+        self.building=building
+    
+    def run(self):
+        newUsers = self.building.generateUser()
+        for user in newUsers:
+            if(user.wantedFloor not in self.building.calls):
+                self.building.calls.append(user.wantedFloor)
+        self.building.users['1'] += newUsers
+        self.building.meanWaitingTime = self.building.totalWaitingTime / self.building.totalTravels
+        self.building.totalUsers += len(newUsers)
+        #affichage
+        time.sleep(1)
 
 class Building:
     #elevators : list<Elevator> /
