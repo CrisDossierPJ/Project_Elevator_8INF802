@@ -101,7 +101,8 @@ class userThread(threading.Thread):
                     self.building.arrivedAt(user, elev.floor)
                     if(elev.floor != 1):
                         self.building.users[str(elev.floor)].append(user)
-                self.building.calls.remove(elev.floor)
+                if(elev.floor in self.building.calls):
+                    self.building.calls.remove(elev.floor)
 
             #On simule le deplacement de l'ascenseur
             time.sleep(0.16)
