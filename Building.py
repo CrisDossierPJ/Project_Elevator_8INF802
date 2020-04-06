@@ -215,4 +215,4 @@ lamb = args.lamb
 expo = args.expo
 
 
-duil = Building(nbAscenseur,typeAlgorithme)
+duil = Building(nbAscenseur,typeAlgorithme,lamb,expo)
