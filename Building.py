@@ -7,6 +7,7 @@ import numpy
 import threading
 from prettytable import PrettyTable
 from os import system, name 
+import argparse
   
 class userThread(threading.Thread):
     def __init__(self,building):
@@ -61,6 +62,7 @@ class userThread(threading.Thread):
         print("Temps total attendu ",self.building.totalWaitingTime)
         print("Temps moyen attendu ",self.building.meanWaitingTime)
         print("Nombre Total de voayages effectué par les ascenseurs ",self.building.totalTravels)
+        print("Appels d'ascensuer ",len(self.building.calls))
         print(disp)
         
     def clear(self): 
@@ -96,7 +98,10 @@ class userThread(threading.Thread):
                     elev.move(self.building.proposeFloor())
 
             #affichage
-            time.sleep(0.11)
+            #L'ascenseur met 10 secondes pour passer d'un étage à l'autre en comptant l'ouverture et la fermeture des portes
+            # On dit que 1min = 1 seconde
+            # donc 10 secondes conrresponds ici a 0.16 secondes
+            time.sleep(0.16)
             self.clear()
             self.display()
             userCooldown += 1
@@ -107,7 +112,7 @@ class userThread(threading.Thread):
 class Building:
     #elevators : list<Elevator> /
     #users : dict<Int,User> 
-    def __init__(self, nbElevator, FCFS = True):
+    def __init__(self, nbElevator, FCFS = True,lamb = 0.5,expo = 60):
         self.elevators = []
         self.users = {
             '1' : [],
@@ -123,7 +128,9 @@ class Building:
         self.totalWaitingTime = 0
         self.meanWaitingTime = 0
         self.calls = []
-        self.exp = exponnorm(60)
+        self.expo = expo
+        self.exp = exponnorm(expo)
+        self.lamb = lamb
 
         for i in range(nbElevator):
             newElevator = Elevator(False,False,[],1,False)
@@ -134,7 +141,7 @@ class Building:
 
 
     def generateUser(self):
-        prob = numpy.random.poisson(0.5)
+        prob = numpy.random.poisson(self.lamb)
         users = []
         if prob != 0 :
             for i in range(prob):
@@ -179,4 +186,18 @@ class Building:
                 self.users[str(floor)].remove(user)
         return inTransit
 
-duil = Building(1)        
+parser = argparse.ArgumentParser(description='Mise en place des paramètres')
+parser.add_argument("--nbAscenseur", default=2, type=int, help="Nombre d'ascenseurs dans le building")
+parser.add_argument("--typeAlgorithme", default=True, type=bool, help="type d'algorithme, FCFS ou SSTF True pour le premier false pour le second")
+parser.add_argument("--lamb", default=0.5, type=float, help="Lambda necessaire pour la generation d'utilisateurs entrant dans le building")
+parser.add_argument("--expo", default=60, type=int, help="Exponentielle generant le temps durant laquelle la personne va travailler dans le batiment")
+
+args = parser.parse_args()
+
+nbAscenseur = args.nbAscenseur
+typeAlgorithme = args.typeAlgorithme
+lamb = args.lamb
+expo = args.expo
+
+
+duil = Building(nbAscenseur,typeAlgorithme)    

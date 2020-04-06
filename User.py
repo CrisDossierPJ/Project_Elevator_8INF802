@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import argparse
 class User:
     #floorWanted : int / ou veut aller l'utilisateur ? 
     #begin/end : date/ heure d'arrivée / de sortie
@@ -11,3 +11,5 @@ class User:
         self.end = end
         self.workingTime = workingTime
         self.working = working
+        
+
