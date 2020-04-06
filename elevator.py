@@ -5,12 +5,13 @@ class Elevator:
     #idle :Boolean /pour savoir si l'ascenseur est au ralenti ou non
     #floor : INT/ pour savoir ou est l'asenceur
     #users : List<User> /  les clients présent dans l'ascenseur
-    def __init__(self,idle,up,users,floor, FCFS):
+    def __init__(self,idle,up,users,floor, FCFS,movingIdle):
         self.idle = idle
         self.up = up
         self.users = users
         self.floor = floor
         self.FCFS = FCFS
+        self.movingIdle = movingIdle
 
     #Fonction de prochain mouvement, appel fait par thread dans Building toutes les 10 secondes
     #proposedFloor : INT / de base à -1, sinon
@@ -22,8 +23,10 @@ class Elevator:
             #Pour le moment le mode idle ne fait rien,
             #l'ascenseur reste la ou il est.
             #Plus tard, ajouter un nouveau comportement pour comparer (ex : aller à l'étage 4)
-            #proposedFloor = 4
-            return
+            if self.movingIdle: 
+                proposedFloor = 4
+            else:
+                return
 
         #Sinon, priorité aux Users à l'intérieur
         nextFloor = -1

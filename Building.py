@@ -127,7 +127,7 @@ class userThread(threading.Thread):
 class Building:
     #elevators : list<Elevator> /
     #users : dict<Int,User> 
-    def __init__(self, nbElevator, FCFS = True,lamb = 0.5,expo = 60):
+    def __init__(self, nbElevator, FCFS = True,lamb = 0.5,expo = 60,movingIdle = False):
         self.elevators = []
         self.users = {
             '1' : [],
@@ -146,9 +146,10 @@ class Building:
         self.expo = expo
         self.exp = exponnorm(expo)
         self.lamb = lamb
+        self.movingIdle = movingIdle
 
         for i in range(nbElevator):
-            newElevator = Elevator(False,False,[],1,False)
+            newElevator = Elevator(False,False,[],1,FCFS,self.movingIdle)
             self.elevators.append(newElevator)
 
         userT = userThread(self)
@@ -206,6 +207,8 @@ parser.add_argument("--nbAscenseur", default=2, type=int, help="Nombre d'ascense
 parser.add_argument("--typeAlgorithme", default=True, type=bool, help="type d'algorithme, FCFS ou SSTF True pour le premier false pour le second")
 parser.add_argument("--lamb", default=0.5, type=float, help="Lambda necessaire pour la generation d'utilisateurs entrant dans le building")
 parser.add_argument("--expo", default=60, type=int, help="Exponentielle generant le temps durant laquelle la personne va travailler dans le batiment")
+parser.add_argument("--movingIdle", default=False, type=bool, help="Lorsque il n'y a plus de travail, l'ascenseur a deux choix, movingIdle : L'ascenseur va à l'étage 4 sinon il ne bouge pas et reste en attente")
+
 
 args = parser.parse_args()
 
@@ -213,6 +216,7 @@ nbAscenseur = args.nbAscenseur
 typeAlgorithme = args.typeAlgorithme
 lamb = args.lamb
 expo = args.expo
+movingIdle = args.movingIdle
 
 
-duil = Building(nbAscenseur,typeAlgorithme,lamb,expo)
+duil = Building(nbAscenseur,typeAlgorithme,lamb,expo,movingIdle)
