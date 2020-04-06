@@ -71,20 +71,29 @@ class userThread(threading.Thread):
     def run(self):
         userCooldown = 6
         while True : 
+            #generer new Users
             if(userCooldown == 6):
                 userCooldown = 0
                 newUsers = self.building.generateUser()
                 for user in newUsers:
                     if(user.floorWanted not in self.building.calls):
+                        #Appel des ascenseurs + sortie de idle si besoin
                         self.building.calls.append(1)
+                        for elev in self.building.elevators:
+                            elev.idle = False
                 self.building.users['1'] += newUsers
-                if self.building.totalTravels != 0 :
-                    self.building.meanWaitingTime = self.building.totalWaitingTime / self.building.totalTravels
                 self.building.totalUsers += len(newUsers)
-                for floor in self.building.users.values():
-                    for user in floor:
-                        self.building.getBackHome(user)
 
+            #Calcul moyenne
+            if self.building.totalTravels != 0 :
+                self.building.meanWaitingTime = self.building.totalWaitingTime / self.building.totalTravels
+
+            #Check si des Users ont fini de travailler
+            for floor in self.building.users.values():
+                for user in floor:
+                    self.building.getBackHome(user)
+
+            #Vide + remplir ascenseur quand arrivé a un étage
             for elev in self.building.elevators:
                 newUsers = self.building.getIntoElevator(elev.floor)
                 leavers = elev.loadUsers(newUsers)
@@ -92,16 +101,18 @@ class userThread(threading.Thread):
                     self.building.arrivedAt(user, elev.floor)
                     if(elev.floor != 1):
                         self.building.users[str(elev.floor)].append(user)
-                        for elev in self.building.elevators:
-                            elev.idle = False
-                for elev in self.building.elevators:
-                    elev.move(self.building.proposeFloor())
+
+            #On simule le deplacement de l'ascenseur
+            time.sleep(0.16)
+            #Puis on le deplace
+            for elev in self.building.elevators:
+                elev.move(self.building.proposeFloor())
 
             #affichage
             #L'ascenseur met 10 secondes pour passer d'un étage à l'autre en comptant l'ouverture et la fermeture des portes
             # On dit que 1min = 1 seconde
             # donc 10 secondes conrresponds ici a 0.16 secondes
-            time.sleep(0.16)
+            
             self.clear()
             self.display()
             userCooldown += 1
