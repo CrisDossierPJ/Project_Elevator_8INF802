@@ -37,9 +37,11 @@ class userThread(threading.Thread):
         for ascenseur in asc:
             for i in range(len(ascenseur)):
                 ascenseur[i] = " "
-            batonnet = "|" * len(self.building.elevators[j].users)+"%s"%self.building.elevators[j].idle
+            batonnet = "|" * len(self.building.elevators[j].users)
             if len(self.building.elevators[j].users) == 0:
-                batonnet = " X %s"%self.building.elevators[j].idle
+                batonnet = " X "
+            if (self.building.elevators[j].idle):
+                batonnet = " zzz "
             ascenseur[self.building.elevators[j].floor - 1] = " %s"%batonnet
             nbUtilisateursActuel += len(self.building.elevators[j].users)
             j+=1
