@@ -5,11 +5,60 @@ from scipy.stats import poisson,exponnorm
 import time
 import numpy
 import threading
-
+from prettytable import PrettyTable
+from os import system, name 
+  
 class userThread(threading.Thread):
     def __init__(self,building):
         threading.Thread.__init__(self)
         self.building=building
+        
+    def display(self):
+        disp = PrettyTable()
+        asc=[]
+        for y in range(len(self.building.elevators)):
+            ascenseur = [" "," "," "," "," "," "," "]
+            asc.append(ascenseur)
+        
+        nbUser = [0,0,0,0,0,0,0]
+        nbEtage = [1,2,3,4,5,6,7]
+        i=0
+        j=0
+        nbUtilisateursActuel = 0
+        
+        for key, value in self.building.users.items():
+            nbEtage[i] = str(key)
+            nbUser[i] = len(value)
+            nbUtilisateursActuel += len(value)
+            i +=1
+        disp.clear()
+        disp.add_column("Numéro Etage",nbEtage)
+        for ascenseur in asc:
+            for i in range(len(ascenseur)):
+                ascenseur[i] = " "
+            ascenseur[self.building.elevators[j].floor - 1] = " X "
+            nbUtilisateursActuel += len(self.building.elevators[j].users)
+            j+=1
+            disp.add_column("Ascenseur numero %s "%j,ascenseur)
+                
+        disp.add_column("Nombre de travailleurs dans l'étage",nbUser)
+        
+        
+        '''
+                    a = 0
+            for b in self.building.users.values():
+                a += len(b)
+            a += len(self.building.elevators[0].users)
+            print("Etage            ",self.building.elevators[0].floor," Nb utilisateurs total : ", self.building.totalUsers, "Nb users actuels : ",a)
+            print("-------------------------------------------")
+            print("List utilisateur ",self.building.elevators[0].users)
+        '''
+        print("Il y a un total de ",self.building.totalUsers," utilisateurs qui sont entrés dans le bâtiment")
+        print("Il y a actuellement ",nbUtilisateursActuel,"utilisateur dans le batiment")
+        print(disp)
+        
+    def clear(self): 
+        system('cls')
     
     def run(self):
         userCooldown = 6
@@ -41,16 +90,13 @@ class userThread(threading.Thread):
                     elev.move(self.building.proposeFloor())
 
             #affichage
-            a = 0
-            for b in self.building.users.values():
-                a += len(b)
-            a += len(self.building.elevators[0].users)
-            print("Etage            ",self.building.elevators[0].floor," Nb utilisateurs total : ", self.building.totalUsers, "Nb users actuels : ",a)
-            print("-------------------------------------------")
-            print("List utilisateur ",self.building.elevators[0].users)
-            
+            time.sleep(0.11)
+            self.clear()
+            self.display()
             userCooldown += 1
-            time.sleep(0.16)
+            
+            
+            
 
 class Building:
     #elevators : list<Elevator> /
@@ -127,4 +173,4 @@ class Building:
                 self.users[str(floor)].remove(user)
         return inTransit
 
-duil = Building(2)        
+duil = Building(1)        
