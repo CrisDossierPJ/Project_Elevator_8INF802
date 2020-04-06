@@ -36,7 +36,10 @@ class userThread(threading.Thread):
         for ascenseur in asc:
             for i in range(len(ascenseur)):
                 ascenseur[i] = " "
-            ascenseur[self.building.elevators[j].floor - 1] = " X "
+            batonnet = "|" * len(self.building.elevators[j].users)
+            if len(self.building.elevators[j].users) == 0:
+                batonnet = " X "
+            ascenseur[self.building.elevators[j].floor - 1] = " %s"%batonnet
             nbUtilisateursActuel += len(self.building.elevators[j].users)
             j+=1
             disp.add_column("Ascenseur numero %s "%j,ascenseur)
@@ -55,6 +58,9 @@ class userThread(threading.Thread):
         '''
         print("Il y a un total de ",self.building.totalUsers," utilisateurs qui sont entrés dans le bâtiment")
         print("Il y a actuellement ",nbUtilisateursActuel,"utilisateur dans le batiment")
+        print("Temps total attendu ",self.building.totalWaitingTime)
+        print("Temps moyen attendu ",self.building.meanWaitingTime)
+        print("Nombre Total de voayages effectué par les ascenseurs ",self.building.totalTravels)
         print(disp)
         
     def clear(self): 
@@ -120,7 +126,7 @@ class Building:
         self.exp = exponnorm(60)
 
         for i in range(nbElevator):
-            newElevator = Elevator(False,False,[],1,FCFS)
+            newElevator = Elevator(False,False,[],1,False)
             self.elevators.append(newElevator)
 
         userT = userThread(self)

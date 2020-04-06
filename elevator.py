@@ -22,6 +22,7 @@ class Elevator:
             #Pour le moment le mode idle ne fait rien,
             #l'ascenseur reste la ou il est.
             #Plus tard, ajouter un nouveau comportement pour comparer (ex : aller à l'étage 4)
+            #proposedFloor = 4
             return
 
         #Sinon, priorité aux Users à l'intérieur
@@ -57,11 +58,12 @@ class Elevator:
     #Retourne l'étage le plus intéressant selon les Users, et l'étage actuel
     def ShortestSeekTimeFirst(self):
         min = 0
-        SeekFloor = -1
+        SeekFloor = 0
         for user in self.users:
             res = abs(self.floor - user.floorWanted)
             if min ==0:
                 min = res
+                SeekFloor = user.floorWanted
             if res < min:
                 min = res
                 SeekFloor = user.floorWanted
