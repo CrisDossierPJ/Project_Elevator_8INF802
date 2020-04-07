@@ -8,7 +8,7 @@ import threading
 from prettytable import PrettyTable
 from os import system, name 
 import argparse
-  
+
 class userThread(threading.Thread):
     def __init__(self,building):
         threading.Thread.__init__(self)
@@ -33,7 +33,7 @@ class userThread(threading.Thread):
             nbUtilisateursActuel += len(value)
             i +=1
         disp.clear()
-        disp.add_column("Numéro Etage",nbEtage)
+        disp.add_column("Numero Etage",nbEtage)
         for ascenseur in asc:
             for i in range(len(ascenseur)):
                 ascenseur[i] = " "
@@ -47,24 +47,17 @@ class userThread(threading.Thread):
             j+=1
             disp.add_column("Ascenseur numero %s "%j,ascenseur)
                 
-        disp.add_column("Nombre de travailleurs dans l'étage",nbUser)
+        disp.add_column("Nombre de travailleurs dans l'etage",nbUser)
         
-        
-        '''
-                    a = 0
-            for b in self.building.users.values():
-                a += len(b)
-            a += len(self.building.elevators[0].users)
-            print("Etage            ",self.building.elevators[0].floor," Nb utilisateurs total : ", self.building.totalUsers, "Nb users actuels : ",a)
-            print("-------------------------------------------")
-            print("List utilisateur ",self.building.elevators[0].users)
-        '''
-        print("Il y a un total de ",self.building.totalUsers," utilisateurs qui sont entrés dans le bâtiment")
+    
+        print("Il y a un total de ",self.building.totalUsers," utilisateurs qui sont entres dans le batiment")
         print("Il y a actuellement ",nbUtilisateursActuel,"utilisateur dans le batiment")
         print("Temps total attendu ",self.building.totalWaitingTime)
         print("Temps moyen attendu ",self.building.meanWaitingTime)
-        print("Nombre Total de voayages effectué par les ascenseurs ",self.building.totalTravels)
+        print("Nombre Total de voayages effectue par les ascenseurs ",self.building.totalTravels)
         print("Appels d'ascensuer ",len(self.building.calls))
+
+        
         print(disp)
         
     def clear(self): 
@@ -95,7 +88,7 @@ class userThread(threading.Thread):
                 for user in floor:
                     self.building.getBackHome(user)
 
-            #Vide + remplir ascenseur quand arrivé a un étage
+            #Vide + remplir ascenseur quand arrive a un etage
             for elev in self.building.elevators:
                 newUsers = self.building.getIntoElevator(elev.floor)
                 leavers = elev.loadUsers(newUsers)
@@ -113,11 +106,12 @@ class userThread(threading.Thread):
                 elev.move(self.building.proposeFloor())
 
             #affichage
-            #L'ascenseur met 10 secondes pour passer d'un étage à l'autre en comptant l'ouverture et la fermeture des portes
+            #L'ascenseur met 10 secondes pour passer d'un etage a l'autre en comptant l'ouverture et la fermeture des portes
             # On dit que 1min = 1 seconde
             # donc 10 secondes conrresponds ici a 0.16 secondes
             
             self.clear()
+            
             self.display()
             userCooldown += 1
             
@@ -127,7 +121,7 @@ class userThread(threading.Thread):
 class Building:
     #elevators : list<Elevator> /
     #users : dict<Int,User> 
-    def __init__(self, nbElevator, FCFS = True,lamb = 0.5,expo = 60,movingIdle = False):
+    def __init__(self, nbElevator, FCFS = True,lamb = 0.5,expo = 60,typeIdle = "noMoveIdle" ):
         self.elevators = []
         self.users = {
             '1' : [],
@@ -146,10 +140,11 @@ class Building:
         self.expo = expo
         self.exp = exponnorm(expo)
         self.lamb = lamb
-        self.movingIdle = movingIdle
+        self.typeIdle = typeIdle
+        self.tpsAttendu = []
 
         for i in range(nbElevator):
-            newElevator = Elevator(False,False,[],1,FCFS,self.movingIdle)
+            newElevator = Elevator(False,False,[],1,FCFS,self.typeIdle)
             self.elevators.append(newElevator)
 
         userT = userThread(self)
@@ -175,6 +170,7 @@ class Building:
     def arrivedAt(self, user, floor):
         user.end = time.time()
         diff = user.end - user.begin
+        self.tpsAttendu.append(diff)
         self.totalWaitingTime += diff
         self.totalTravels += 1
         if(floor == 1):
@@ -202,12 +198,12 @@ class Building:
                 self.users[str(floor)].remove(user)
         return inTransit
 
-parser = argparse.ArgumentParser(description='Mise en place des paramètres')
+parser = argparse.ArgumentParser(description='Mise en place des parametres')
 parser.add_argument("--nbAscenseur", default=2, type=int, help="Nombre d'ascenseurs dans le building")
 parser.add_argument("--typeAlgorithme", default=True, type=bool, help="type d'algorithme, FCFS ou SSTF True pour le premier false pour le second")
 parser.add_argument("--lamb", default=0.5, type=float, help="Lambda necessaire pour la generation d'utilisateurs entrant dans le building")
 parser.add_argument("--expo", default=60, type=int, help="Exponentielle generant le temps durant laquelle la personne va travailler dans le batiment")
-parser.add_argument("--movingIdle", default=False, type=bool, help="Lorsque il n'y a plus de travail, l'ascenseur a deux choix, movingIdle : L'ascenseur va à l'étage 4 sinon il ne bouge pas et reste en attente")
+parser.add_argument("--typeIdle", default="noMoveIdle",choices=["movingIdle","noMoveIdle", "goDownIdle","goUpIdle"], type=str, help="Type de Ralenti : MovingIdle va a 4eme etage, noMoveIdle ne bouge pas de l'etage ou il a laisser le dernier utilisateur GoUpIdle/GoDownIdle : Va un etage au dessus/en dessous de l'etage actuel")
 
 
 args = parser.parse_args()
@@ -216,7 +212,7 @@ nbAscenseur = args.nbAscenseur
 typeAlgorithme = args.typeAlgorithme
 lamb = args.lamb
 expo = args.expo
-movingIdle = args.movingIdle
+typeIdle = args.typeIdle
 
 
-duil = Building(nbAscenseur,typeAlgorithme,lamb,expo,movingIdle)
+duil = Building(nbAscenseur,typeAlgorithme,lamb,expo,typeIdle)
