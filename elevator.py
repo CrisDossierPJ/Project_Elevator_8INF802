@@ -5,12 +5,12 @@ class Elevator:
     #idle :Boolean /pour savoir si l'ascenseur est au ralenti ou non
     #floor : INT/ pour savoir ou est l'asenceur
     #users : List<User> /  les clients present dans l'ascenseur
-    def __init__(self,idle,up,users,floor, FCFS,typeIdle):
+    def __init__(self,idle,up,users,floor, typeAlgo ,typeIdle):
         self.idle = idle
         self.up = up
         self.users = users
         self.floor = floor
-        self.FCFS = FCFS
+        self.typeAlgo = typeAlgo
         self.typeIdle = typeIdle
 
     #Fonction de prochain mouvement, appel fait par thread dans Building toutes les 10 secondes
@@ -26,9 +26,15 @@ class Elevator:
             if self.typeIdle == "movingIdle": 
                 proposedFloor = 4
             elif self.typeIdle == "goUpIdle":
-                proposedFloor = self.floor +1
+                if proposedFloor != 7:
+                    proposedFloor = self.floor +1
+                else:
+                    return    
             elif self.typeIdle == "goDownIdle":
-                proposedFloor = self.floor -1
+                if proposedFloor != 1:
+                    proposedFloor = self.floor -1
+                else:
+                   return
             elif self.typeIdle == "noMoveIdle":
                 return
                 
@@ -38,9 +44,9 @@ class Elevator:
         nextFloor = -1
         if(len(self.users) != 0):
             #Choisir l'etage desire selon la fonction choisie (First Come First Serve ou SSTF)
-            if(self.FCFS):
+            if(self.typeAlgo == "FCFS"):
                 nextFloor = self.FirstComeFirstServe()
-            else:
+            elif self.typeAlgo == "SSTF":
                 nextFloor = self.ShortestSeekTimeFirst()
 
         #Sinon prend le proposedFloor
@@ -52,9 +58,13 @@ class Elevator:
             if(nextFloor == self.floor):
                 return
             if(nextFloor > self.floor ):
+                if self.floor == 7:
+                    return
                 self.up = True
                 self.floor += 1
             else:
+                if self.floor == 1 :
+                    return
                 self.up = False
                 self.floor -= 1
         

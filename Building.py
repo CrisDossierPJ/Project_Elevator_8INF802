@@ -8,6 +8,7 @@ import threading
 from prettytable import PrettyTable
 from os import system, name 
 import argparse
+import csv
 
 class userThread(threading.Thread):
     def __init__(self,building):
@@ -16,6 +17,12 @@ class userThread(threading.Thread):
         
     def display(self):
         disp = PrettyTable()
+        nomCsv = ""
+        nomCsv += str(self.building.elevators[0].typeAlgo) + "_" + str(self.building.elevators[0].typeIdle)+ "_nbElevator"+str(len(self.building.elevators))
+        with open('%s.csv'%nomCsv, 'w', newline='') as csvfile:
+            spamwriter = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            for attente in self.building.tpsAttendu:
+                spamwriter.writerow([attente])
         asc=[]
         for y in range(len(self.building.elevators)):
             ascenseur = [" "," "," "," "," "," "," "]
@@ -49,7 +56,9 @@ class userThread(threading.Thread):
                 
         disp.add_column("Nombre de travailleurs dans l'etage",nbUser)
         
-    
+        algo = self.building.elevators[0].typeAlgo            
+        print("Algorithme choisi : ",algo)
+        print("idle Choisi",self.building.typeIdle)
         print("Il y a un total de ",self.building.totalUsers," utilisateurs qui sont entres dans le batiment")
         print("Il y a actuellement ",nbUtilisateursActuel,"utilisateur dans le batiment")
         print("Temps total attendu ",self.building.totalWaitingTime)
@@ -121,7 +130,7 @@ class userThread(threading.Thread):
 class Building:
     #elevators : list<Elevator> /
     #users : dict<Int,User> 
-    def __init__(self, nbElevator, FCFS = True,lamb = 0.5,expo = 60,typeIdle = "noMoveIdle" ):
+    def __init__(self, nbElevator, typeAlgo,lamb = 0.5,expo = 60,typeIdle = "noMoveIdle" ):
         self.elevators = []
         self.users = {
             '1' : [],
@@ -144,7 +153,7 @@ class Building:
         self.tpsAttendu = []
 
         for i in range(nbElevator):
-            newElevator = Elevator(False,False,[],1,FCFS,self.typeIdle)
+            newElevator = Elevator(False,False,[],1,typeAlgo,self.typeIdle)
             self.elevators.append(newElevator)
 
         userT = userThread(self)
@@ -200,7 +209,7 @@ class Building:
 
 parser = argparse.ArgumentParser(description='Mise en place des parametres')
 parser.add_argument("--nbAscenseur", default=2, type=int, help="Nombre d'ascenseurs dans le building")
-parser.add_argument("--typeAlgorithme", default=True, type=bool, help="type d'algorithme, FCFS ou SSTF True pour le premier false pour le second")
+parser.add_argument("--typeAlgorithme", default="FCFS",choices = ["FCFS","SSTF"], type=str, help="type d'algorithme, FCFS ou SSTF True pour le premier false pour le second")
 parser.add_argument("--lamb", default=0.5, type=float, help="Lambda necessaire pour la generation d'utilisateurs entrant dans le building")
 parser.add_argument("--expo", default=60, type=int, help="Exponentielle generant le temps durant laquelle la personne va travailler dans le batiment")
 parser.add_argument("--typeIdle", default="noMoveIdle",choices=["movingIdle","noMoveIdle", "goDownIdle","goUpIdle"], type=str, help="Type de Ralenti : MovingIdle va a 4eme etage, noMoveIdle ne bouge pas de l'etage ou il a laisser le dernier utilisateur GoUpIdle/GoDownIdle : Va un etage au dessus/en dessous de l'etage actuel")
