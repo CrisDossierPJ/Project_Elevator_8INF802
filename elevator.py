@@ -19,24 +19,25 @@ class Elevator:
 
         #Si on a aucun Users, et que Building ne nous demande pas d'en recuperer, passage en mode Idle
         if(len(self.users) == 0 and proposedFloor == -1):
-            self.idle = True
+            
             #Pour le moment le mode idle ne fait rien,
             #l'ascenseur reste la ou il est.
             #Plus tard, ajouter un nouveau comportement pour comparer (ex : aller a l'etage 4)
             if self.typeIdle == "movingIdle": 
                 proposedFloor = 4
-            elif self.typeIdle == "goUpIdle":
-                if proposedFloor != 7:
+            elif self.typeIdle == "goUpIdle" and self.idle == False:
+                if self.floor != 7:
                     proposedFloor = self.floor +1
                 else:
                     return    
-            elif self.typeIdle == "goDownIdle":
-                if proposedFloor != 1:
+            elif self.typeIdle == "goDownIdle" and self.idle == False:
+                if self.floor != 1:
                     proposedFloor = self.floor -1
                 else:
                    return
             elif self.typeIdle == "noMoveIdle":
                 return
+            self.idle = True
                 
                 
 
@@ -58,13 +59,9 @@ class Elevator:
             if(nextFloor == self.floor):
                 return
             if(nextFloor > self.floor ):
-                if self.floor == 7:
-                    return
                 self.up = True
                 self.floor += 1
             else:
-                if self.floor == 1 :
-                    return
                 self.up = False
                 self.floor -= 1
         

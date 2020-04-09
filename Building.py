@@ -224,4 +224,4 @@ expo = args.expo
 typeIdle = args.typeIdle
 
 
-duil = Building(nbAscenseur,typeAlgorithme,lamb,expo,typeIdle)
+duil = Building(nbAscenseur,typeAlgorithme,lamb,expo,"goUpIdle")
