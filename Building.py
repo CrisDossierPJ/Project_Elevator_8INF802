@@ -137,15 +137,7 @@ class userThread(threading.Thread):
                     self.createCsv()
                     break
             userCooldown += 1
-            
-            
-class Application(tk.Frame):
-    def __init__(self, master=None,width = 60,height =60):
-        tk.Frame.__init__(self, master)
-        self.width=width
-        self.height=height
-        self.initWidget()
-        self.grid()
+
         
             
 
