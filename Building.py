@@ -9,20 +9,29 @@ from prettytable import PrettyTable
 from os import system, name 
 import argparse
 import csv
+import tkinter as tk
+import msvcrt
 
 class userThread(threading.Thread):
     def __init__(self,building):
         threading.Thread.__init__(self)
         self.building=building
+        self.csvfile = object
+    
+    def createCsv(self):
+        nomCsv = ""
+        nomCsv += str(self.building.elevators[0].typeAlgo) + "_" + str(self.building.elevators[0].typeIdle)+ "_nbElevator"+str(len(self.building.elevators))
+        
+        self.csvfile = open("%s.csv"%nomCsv, 'w', newline='')
+        with self.csvfile:
+            spamwriter = csv.writer(self.csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            for attente in self.building.tpsAttendu:
+                doubAtten = str(attente).replace(".",",")
+                spamwriter.writerows([doubAtten])
         
     def display(self):
         disp = PrettyTable()
-        nomCsv = ""
-        nomCsv += str(self.building.elevators[0].typeAlgo) + "_" + str(self.building.elevators[0].typeIdle)+ "_nbElevator"+str(len(self.building.elevators))
-        with open('%s.csv'%nomCsv, 'w', newline='') as csvfile:
-            spamwriter = csv.writer(csvfile, delimiter=' ',quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            for attente in self.building.tpsAttendu:
-                spamwriter.writerow([attente])
+               
         asc=[]
         for y in range(len(self.building.elevators)):
             ascenseur = [" "," "," "," "," "," "," "]
@@ -74,6 +83,7 @@ class userThread(threading.Thread):
     
     def run(self):
         userCooldown = 6
+        
         while True : 
             #generer new Users
             if(userCooldown == 6):
@@ -122,9 +132,21 @@ class userThread(threading.Thread):
             self.clear()
             
             self.display()
+            if msvcrt.kbhit():
+                if ord(msvcrt.getch()) == 27:
+                    self.createCsv()
+                    break
             userCooldown += 1
             
             
+class Application(tk.Frame):
+    def __init__(self, master=None,width = 60,height =60):
+        tk.Frame.__init__(self, master)
+        self.width=width
+        self.height=height
+        self.initWidget()
+        self.grid()
+        
             
 
 class Building:
@@ -224,4 +246,18 @@ expo = args.expo
 typeIdle = args.typeIdle
 
 
-duil = Building(nbAscenseur,typeAlgorithme,lamb,expo,"goUpIdle")
+FCFSmovingIdle = Building(2,"FCFS",lamb,expo,"movingIdle")
+#FCFSnoMoveIdle = Building(2,"FCFS",lamb,expo,"noMoveIdle")
+#FCFSgoDownIdle = Building(2,"FCFS",lamb,expo,"goDownIdle")
+#FCFSgoUpIdle = Building(2,"FCFS",lamb,expo,"goUpIdle")
+#
+#SSTFmovingIdle = Building(2,"SSTF",lamb,expo,"movingIdle")
+#SSTFnoMoveIdle = Building(2,"SSTF",lamb,expo,"noMoveIdle")
+#SSTFgoDownIdle = Building(2,"SSTF",lamb,expo,"goDownIdle")
+#SSTFgoUpIdle = Building(2,"SSTF",lamb,expo,"goUpIdle")
+
+
+
+
+
+
