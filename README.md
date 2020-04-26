@@ -15,8 +15,9 @@ Lorsque toutes les dépendances sont installés, vous pouvez lancez la simulatio
 # Lancer la simulation
 
 Pour lancer la simulation, executez le fichier Building.py de la sorte : 'python3 Buildind.py' (ou 'python Building.py' sous Windows). Executer la simulation de la sorte utilisera les valeurs par defaut des différents arguments.
-Sous Mac, les privilèges administrateurs sont nécessaires pour lancer la simulation : 'sudo python3 Buildind.py'
+
 Pour obtenir la liste des arguments modifiables dans votre console, lancez : 'python3 Buildind.py -h'
+
 
 Liste des arguments : 
 
