@@ -10,7 +10,9 @@ from os import system, name
 import argparse
 import csv
 import tkinter as tk
-import msvcrt
+from kbhit import KBHit
+
+kb = KBHit()
 
 class userThread(threading.Thread):
     def __init__(self,building):
@@ -67,21 +69,24 @@ class userThread(threading.Thread):
         
         algo = self.building.elevators[0].typeAlgo            
         print("Algorithme choisi : ",algo)
-        print("idle Choisi",self.building.typeIdle)
+        print("Idle choisi",self.building.typeIdle)
         print("Il y a un total de ",self.building.totalUsers," utilisateurs qui sont entres dans le batiment")
         print("Il y a actuellement ",nbUtilisateursActuel,"utilisateur dans le batiment")
         print("Temps total attendu ",self.building.totalWaitingTime)
         print("Temps moyen attendu ",self.building.meanWaitingTime)
         print("Nombre Total de voayages effectue par les ascenseurs ",self.building.totalTravels)
-        print("Appels d'ascensuer ",len(self.building.calls))
+        print("Appels d'ascenseur ",len(self.building.calls))
        
         
 
         
         print(disp)
         
-    def clear(self): 
-        system('cls')
+    def clear(self):
+        if name == 'nt': 
+            system('cls')
+        else:
+            system('clear')
     
     def run(self):
         userCooldown = 6
@@ -135,8 +140,8 @@ class userThread(threading.Thread):
             self.clear()
             
             self.display()
-            if msvcrt.kbhit():
-                if ord(msvcrt.getch()) == 27:
+            if kb.kbhit():
+                if ord(kb.getch()) == 27:
                     self.createCsv()
                     break
             userCooldown += 1
