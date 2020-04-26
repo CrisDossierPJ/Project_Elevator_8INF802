@@ -74,6 +74,8 @@ class userThread(threading.Thread):
         print("Temps moyen attendu ",self.building.meanWaitingTime)
         print("Nombre Total de voayages effectue par les ascenseurs ",self.building.totalTravels)
         print("Appels d'ascensuer ",len(self.building.calls))
+       
+        
 
         
         print(disp)
@@ -83,9 +85,10 @@ class userThread(threading.Thread):
     
     def run(self):
         userCooldown = 6
-        
         while True : 
             #generer new Users
+            
+           
             if(userCooldown == 6):
                 userCooldown = 0
                 newUsers = self.building.generateUser()
@@ -238,15 +241,7 @@ expo = args.expo
 typeIdle = args.typeIdle
 
 
-FCFSmovingIdle = Building(2,"FCFS",lamb,expo,"movingIdle")
-#FCFSnoMoveIdle = Building(2,"FCFS",lamb,expo,"noMoveIdle")
-#FCFSgoDownIdle = Building(2,"FCFS",lamb,expo,"goDownIdle")
-#FCFSgoUpIdle = Building(2,"FCFS",lamb,expo,"goUpIdle")
-#
-#SSTFmovingIdle = Building(2,"SSTF",lamb,expo,"movingIdle")
-#SSTFnoMoveIdle = Building(2,"SSTF",lamb,expo,"noMoveIdle")
-#SSTFgoDownIdle = Building(2,"SSTF",lamb,expo,"goDownIdle")
-#SSTFgoUpIdle = Building(2,"SSTF",lamb,expo,"goUpIdle")
+myBuilding = Building(nbAscenseur,typeAlgorithme,lamb,expo,typeIdle)
 
 
 
