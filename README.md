@@ -1,5 +1,5 @@
 # Project_Elevator_8INF802
-Projet de simulation modélisant le fonctionnement d'ascenseurs réalisé dans le cadre du cours 8INF802:Simulation de systèmes.
+Projet de simulation modélisant le fonctionnement d'ascenseurs réalisé dans le cadre du cours 8INF802:Simulation de systèmes par Christian ATTIA et Valentin VIGER.
 Afin d'exécuter le projet, executer le fichier 'Building.py'
 
 # Installer les dépendances
